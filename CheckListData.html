@@ -20,17 +20,23 @@
         <div class="container">
             <h1 class="text-center">CheckList Data</h1>
             <br>
-            <div class="inputData text-center"><input type="number" placeholder="Enter Tenant Id" id="tenantId">
+            <div class="inputData text-center">
+                <input type="number" placeholder="Enter Tenant Id" id="tenantId">
                 <input type="number" placeholder="Enter Application Id" id="appId">
                 <button type="submit" class="btn btn-danger" id="submit">Submit</button>
             </div>
         </div>
-        <div class="main-container">
+        <div class="main-container container">
 
         </div>
+        <div class="taskContainer text-center">
+            <input type="number" placeholder="Enter CheckList Id" id="checklistId">
+            <button type="submit" class="btn btn-danger" id="taskButton">Submit</button>
+        </div>
+        <div class="taskListContainer container"></div>
     
         <script>
-            var mainContainer =  document.querySelector('[class*=main-container]');
+            var mainContainer =  document.querySelector('[class*="main-container"]');
             var api = 'https://app.apty.io/assist/api/onBoarding/v3/tenant/'
             document.querySelector('#submit').addEventListener('click',()=>{
                 var appId = document.querySelector('#appId').value;
@@ -45,6 +51,8 @@
                 console.log(completedata);
                 for(let i=0; i<completedata.length;i++){
                     console.log(completedata[i].name);
+                    var div = document.createElement('div');
+                    div.classList.add('checklist');
                     var row = document.createElement('div');
                     row.classList.add('row');
                     var col = document.createElement('div');
@@ -56,25 +64,69 @@
                     var p = document.createElement('h5');
                     p.classList.add('text-danger');
                     p.innerHTML = completedata[i].id;
-                    var checkTask = document.createElement('button');
-                    checkTask.classList.add('taskList');
-                    checkTask.innerHTML = 'Check the task Id and Name';
+                    mainContainer.appendChild(div);
+                    div.appendChild(row);
+                    row.appendChild(col);
+                    col.appendChild(card);
                     card.appendChild(h3);
                     card.appendChild(p);
-                    card.appendChild(checkTask);
-                    col.appendChild(card);
-                    row.appendChild(col);
-                    mainContainer.appendChild(row);
-
-                    var checkButton = document.querySelector('taskList');
-                    console.log(checkButton);
                 }
             });     
             });
 
-      
+            
+//            https://app.apty.io/assist/api/onBoarding/v3/tenant/56/application/161/locales/1/task/283
 
+                    var taskContainer =  document.querySelector('[class*="taskContainer"]');
+                    var taskButton = document.querySelector('#taskButton');
+                    var taskListContainer = document.querySelector('.taskListContainer');
+                    taskButton.addEventListener('click', ()=>{
+                        let taskUrl = 'https://app.apty.io/assist/api/onBoarding/v3/tenant/';
+                        var appId = document.querySelector('#appId').value;
+                        var tenantId = document.querySelector('#tenantId').value;
+                        var checkId =  document.querySelector('#checklistId').value;
+                        var finalUrl = `${taskUrl}${tenantId}/application/${appId}/locales/1/task/${checkId}`
+                        console.log(finalUrl);
+                       fetch(finalUrl).then((data)=>{
+                        return data.json();
+                       }).then((completedata)=>{
+                       // console.log(completedata);
+                        var taskItems = completedata.items;
+                        //console.log(taskItems);
+                        for(i=0;i<taskItems.length;i++){
+                            var div = document.createElement('div');
+                    div.classList.add('taskList');
+                    var row = document.createElement('div');
+                    row.classList.add('row');
+                    var col = document.createElement('div');
+                    col.classList.add('col-4');
+                    var card = document.createElement('div');
+                    card.classList.add('card');
+                    var h3 = document.createElement('h3');
+                    h3.innerHTML = taskItems[i].name;
+                    var p = document.createElement('h5');
+                    p.classList.add('text-danger');
+                    p.innerHTML = taskItems[i].id;
+                    taskListContainer.appendChild(div);
+                    div.appendChild(row);
+                    row.appendChild(col);
+                    col.appendChild(card);
+                    card.appendChild(h3);
+                    card.appendChild(p);
+                        }
+                       });
+                    })
 
+                    //display task search bar
+                    var checkTaskName = setInterval(()=>{
+                        if( document.querySelector('[class="checklist"]')){
+                          
+                            taskContainer.style.display = "block"
+                        }
+                        else{
+                            taskContainer.style.display = "none"
+                        }
+                    }, 500)
            
         </script>
     </body>
